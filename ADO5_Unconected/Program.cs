@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
@@ -408,6 +409,255 @@ namespace ADO5_Unconected
             }
         }
 
+        public static void ShowCoffeeWithCherry()
+        {
+            dataSet = new DataSet();
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                dataAdapter = new SqlDataAdapter(
+                    "SELECT * FROM Info WHERE Description LIKE '%cherry%'",
+                    connection
+                );
+
+                dataAdapter.Fill(dataSet, "Info");
+
+                dataTable = dataSet.Tables["Info"];
+
+                foreach (DataRow row in dataTable.Rows)
+                {
+                    Console.WriteLine(
+                        $"{row["CoffeName"]} {row["Description"]}"
+                    );
+                }
+            }
+        }
+
+        public static void ShowCoffeeByCost(decimal min, decimal max)
+        {
+            dataSet = new DataSet();
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                dataAdapter = new SqlDataAdapter(
+                    "SELECT * FROM Info WHERE Cost BETWEEN @min AND @max",
+                    connection
+                );
+
+                dataAdapter.SelectCommand.Parameters.AddWithValue("@min", min);
+                dataAdapter.SelectCommand.Parameters.AddWithValue("@max", max);
+
+                dataAdapter.Fill(dataSet, "Info");
+
+                dataTable = dataSet.Tables["Info"];
+
+                foreach (DataRow row in dataTable.Rows)
+                {
+                    Console.WriteLine(
+                        $"{row["CoffeName"]} {row["Cost"]}"
+                    );
+                }
+            }
+        }
+
+        public static void ShowCoffeeByGramm(int min, int max)
+        {
+            dataSet = new DataSet();
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                dataAdapter = new SqlDataAdapter(
+                    "SELECT * FROM Info WHERE Gramm BETWEEN @min AND @max",
+                    connection
+                );
+
+                dataAdapter.SelectCommand.Parameters.AddWithValue("@min", min);
+                dataAdapter.SelectCommand.Parameters.AddWithValue("@max", max);
+
+                dataAdapter.Fill(dataSet, "Info");
+
+                dataTable = dataSet.Tables["Info"];
+
+                foreach (DataRow row in dataTable.Rows)
+                {
+                    Console.WriteLine(
+                        $"{row["CoffeName"]} {row["Gramm"]}g"
+                    );
+                }
+            }
+        }
+
+        public static void ShowCoffeeByCountries()
+        {
+            dataSet = new DataSet();
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                dataAdapter = new SqlDataAdapter(
+                    "SELECT * FROM Info WHERE Country IN ('Brazil','Italy')",
+                    connection
+                );
+
+                dataAdapter.Fill(dataSet, "Info");
+
+                dataTable = dataSet.Tables["Info"];
+
+                foreach (DataRow row in dataTable.Rows)
+                {
+                    Console.WriteLine(
+                        $"{row["CoffeName"]} - {row["Country"]}"
+                    );
+                }
+            }
+        }
+
+        public static void ShowCountriesCount()
+        {
+            dataSet = new DataSet();
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                dataAdapter = new SqlDataAdapter(
+                    "SELECT Country, COUNT(*) AS Amount FROM Info GROUP BY Country",
+                    connection
+                );
+
+                dataAdapter.Fill(dataSet, "Info");
+
+                dataTable = dataSet.Tables["Info"];
+
+                foreach (DataRow row in dataTable.Rows)
+                {
+                    Console.WriteLine(
+                        $"{row["Country"]}: {row["Amount"]}"
+                    );
+                }
+            }
+        }
+
+        public static void ShowAverageGrammByCountry()
+        {
+            dataSet = new DataSet();
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                dataAdapter = new SqlDataAdapter(
+                    "SELECT Country, AVG(Gramm) AS AvgGramm FROM Info GROUP BY Country",
+                    connection
+                );
+
+                dataAdapter.Fill(dataSet, "Info");
+
+                dataTable = dataSet.Tables["Info"];
+
+                foreach (DataRow row in dataTable.Rows)
+                {
+                    Console.WriteLine(
+                        $"{row["Country"]}: {row["AvgGramm"]}"
+                    );
+                }
+            }
+        }
+
+        public static void ShowThreeCheapestByCountry(string country)
+        {
+            dataSet = new DataSet();
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                dataAdapter = new SqlDataAdapter(
+                    "SELECT TOP 3 * FROM Info WHERE Country = @country ORDER BY Cost ASC",
+                    connection
+                );
+
+                dataAdapter.SelectCommand.Parameters.AddWithValue("@country", country);
+
+                dataAdapter.Fill(dataSet, "Info");
+
+                dataTable = dataSet.Tables["Info"];
+
+                foreach (DataRow row in dataTable.Rows)
+                {
+                    Console.WriteLine(
+                        $"{row["CoffeName"]} - {row["Cost"]}"
+                    );
+                }
+            }
+        }
+
+        public static void ShowThreeExpensiveByCountry(string country)
+        {
+            dataSet = new DataSet();
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                dataAdapter = new SqlDataAdapter(
+                    "SELECT TOP 3 * FROM Info WHERE Country = @country ORDER BY Cost DESC",
+                    connection
+                );
+
+                dataAdapter.SelectCommand.Parameters.AddWithValue("@country", country);
+
+                dataAdapter.Fill(dataSet, "Info");
+
+                dataTable = dataSet.Tables["Info"];
+
+                foreach (DataRow row in dataTable.Rows)
+                {
+                    Console.WriteLine(
+                        $"{row["CoffeName"]} - {row["Cost"]}"
+                    );
+                }
+            }
+        }
+
+        public static void ShowThreeCheapest()
+        {
+            dataSet = new DataSet();
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                dataAdapter = new SqlDataAdapter(
+                    "SELECT TOP 3 * FROM Info ORDER BY Cost ASC",
+                    connection
+                );
+
+                dataAdapter.Fill(dataSet, "Info");
+
+                dataTable = dataSet.Tables["Info"];
+
+                foreach (DataRow row in dataTable.Rows)
+                {
+                    Console.WriteLine(
+                        $"{row["CoffeName"]} - {row["Country"]} - {row["Cost"]}"
+                    );
+                }
+            }
+        }
+
+        public static void ShowThreeExpensive()
+        {
+            dataSet = new DataSet();
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                dataAdapter = new SqlDataAdapter(
+                    "SELECT TOP 3 * FROM Info ORDER BY Cost DESC",
+                    connection
+                );
+
+                dataAdapter.Fill(dataSet, "Info");
+
+                dataTable = dataSet.Tables["Info"];
+
+                foreach (DataRow row in dataTable.Rows)
+                {
+                    Console.WriteLine(
+                        $"{row["CoffeName"]} - {row["Country"]} - {row["Cost"]}"
+                    );
+                }
+            }
+        }
 
         static void Main(string[] args)
         {
@@ -455,6 +705,35 @@ namespace ADO5_Unconected
             Console.WriteLine("\nCount of Arabica, Robusta and Blend:");
             ShowCoffeeTypesCount();
 
+            Console.WriteLine("\nCoffee with cherry:");
+            ShowCoffeeWithCherry();
+
+            Console.WriteLine("\nCoffee cost from 10 to 20:");
+            ShowCoffeeByCost(10, 20);
+
+            Console.WriteLine("\nCoffee gramm from 200 to 500:");
+            ShowCoffeeByGramm(200, 500);
+
+            Console.WriteLine("\nCoffee from countries:");
+            ShowCoffeeByCountries();
+
+            Console.WriteLine("\nCount of coffee sorts by country:");
+            ShowCountriesCount();
+
+            Console.WriteLine("\nAverage grams of coffee by country:");
+            ShowAverageGrammByCountry();
+
+            Console.WriteLine("\nThree cheapest coffee sorts from Brazil:");
+            ShowThreeCheapestByCountry("Brazil");
+
+            Console.WriteLine("\nThree most expensive coffee sorts from Brazil:");
+            ShowThreeExpensiveByCountry("Brazil");
+
+            Console.WriteLine("\nThree cheapest coffee sorts from all countries:");
+            ShowThreeCheapest();
+
+            Console.WriteLine("\nThree most expensive coffee sorts from all countries:");
+            ShowThreeExpensive();
 
 
 
